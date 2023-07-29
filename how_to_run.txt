@@ -1,0 +1,5 @@
+Rscript --verbose go_chord_08042023.R example_input.tsv rat 20 10
+1) 3 column input.tsv
+2) organism (human, rat, mouse)
+3) Number of processes (BP, MF, CC)
+4) Number of gene per processes
