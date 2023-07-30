@@ -5,6 +5,7 @@ suppressPackageStartupMessages(library(tidyr))
 suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(library(janitor))
 suppressPackageStartupMessages(library(clusterProfiler))
+suppressPackageStartupMessages(library(here))
 #######################
 ## Updated code#########
 ## ####################
@@ -40,6 +41,7 @@ enrich_GO <- function(x){
         )@result %>%
     filter(ONTOLOGY == "BP") %>%
     arrange(p.adjust) %>%
+        # slice_head(n = 10) %>%
     slice_head(n = as.integer(options[3])) %>%
     dplyr::select(1:3,7,9) %>%
     ungroup() %>%
@@ -61,7 +63,8 @@ merge_df <- function(x,y){
         separate_longer_delim(Genes, ",") %>%
         inner_join(y, by = c("Genes" = "symbol")) %>%
         group_by(ID, Category) %>%
-        slice_max(order_by = abs(fc), n = as.integer(options[4])) %>%
+        # slice_max(order_by = abs(fc), n = 10) %>%
+       slice_max(order_by = abs(fc), n = as.integer(options[4])) %>%
         ungroup() %>%
         as.data.frame()
 }
@@ -82,7 +85,7 @@ Org_db <- switch(options[2], "mouse" = "Mm", "rat" = "Rn", "human" = "Hs")
 
 # Build the package name
 Org <- paste0("org.",Org_db,".eg.db")
-
+# Org <- "org.Mm.eg.db"
 #Load the package name
 suppressPackageStartupMessages(require(Org, character.only = T))
 
@@ -99,8 +102,8 @@ gene_df <- final_df(merged_df)
 ## draw diagram.
 circ <- circle_dat(enrich_df2, gene_df)
 chord <- chord_dat(circ, gene_df, enrich_df2$ID)
-GOChord(chord, space=0.02)
-
+GOChord(chord)
+# ggsave("test.pdf", dpi = 300, width = 1800, height = 1800, units = "px")
 # save.image("go_plot.Rdata")
-
+GOChord
 
